@@ -31,6 +31,7 @@ def recommend(input: UserInput):
         ]
     }
 
+    # 조건에 따라 미션 후보 선택
     if input.weather == "맑음" and "외출" in input.schedule:
         candidates = all_missions["맑음"]
     elif input.weather == "비":
@@ -38,6 +39,9 @@ def recommend(input: UserInput):
     else:
         candidates = all_missions["실내"]
 
+    # 이미 완료한 미션은 제외
     recommendations = [m for m in candidates if m not in input.completed]
-    return {"recommended_missions": recommendations[:3]}
 
+    return {
+        "recommended_missions": recommendations[:3]
+    }
