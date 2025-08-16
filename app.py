@@ -1,8 +1,18 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# ✅ CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 모든 도메인 허용 (나중에 Glide 주소만 넣어도 됨)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class UserInput(BaseModel):
     day: str
@@ -31,7 +41,6 @@ def recommend(input: UserInput):
         ]
     }
 
-    # 조건에 따라 미션 후보 선택
     if input.weather == "맑음" and "외출" in input.schedule:
         candidates = all_missions["맑음"]
     elif input.weather == "비":
@@ -39,9 +48,6 @@ def recommend(input: UserInput):
     else:
         candidates = all_missions["실내"]
 
-    # 이미 완료한 미션은 제외
     recommendations = [m for m in candidates if m not in input.completed]
 
-    return {
-        "recommended_missions": recommendations[:3]
-    }
+    return {"recommended_missions": recommendations[:3]}
